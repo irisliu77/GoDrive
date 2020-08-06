@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "948094829593",
+    "firebase_url": "https://matrix-15810.firebaseio.com",
+    "project_id": "matrix-15810",
+    "storage_bucket": "matrix-15810.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:948094829593:android:6cb7ef901b117a9ee51688",
+        "android_client_info": {
+          "package_name": "com.godrive.matrix"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "948094829593-2fv1g22kgnbf827c1u21oh78lbvr47vi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.godrive.matrix",
+            "certificate_hash": "5274b681e6035d35001ccf4dae25e779ca32c11a"
+          }
+        },
+        {
+          "client_id": "948094829593-gq8e95mo7rgm31q6q6pl7p1r8b31j1se.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7NNf8HUV2nOq0iGQSC52yCW1fhNBHttM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "948094829593-gq8e95mo7rgm31q6q6pl7p1r8b31j1se.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

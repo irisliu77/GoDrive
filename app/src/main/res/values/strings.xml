@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Matrix</string>
+    <string name="country">America</string>
+
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+</resources>
