@@ -32,6 +32,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     private LocationTracker locationTracker;
     private FloatingActionButton fabReport;
     private ReportDialog dialog;
+    private FloatingActionButton fabFocus;
 
     public static MainFragment newInstance() {
 
@@ -58,15 +59,26 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mapView = (MapView) view.findViewById(R.id.event_map_view);
+        mapView = (MapView) this.view.findViewById(R.id.event_map_view);
+
         fabReport = (FloatingActionButton)view.findViewById(R.id.fab);
         fabReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //show dialog
-                showDialog(null,null);
+                showDialog(null, null);
             }
         });
+
+        fabFocus = (FloatingActionButton) view.findViewById(R.id.fab_focus);
+
+        fabFocus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mapView.getMapAsync(MainFragment.this);
+            }
+        });
+
 
         if (mapView != null) {
             mapView.onCreate(null);
@@ -74,6 +86,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             mapView.getMapAsync(this);
         }
     }
+
 
     @Override
     public void onResume() {

@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.Window;
+import android.widget.ViewSwitcher;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -20,7 +21,10 @@ public class ReportDialog extends Dialog {
     private int cx;
     private int cy;
     private RecyclerView mRecyclerView;
-    private ReportRecycleViewAdapter mRecyclerViewAdapter;
+    private ReportRecyclerViewAdapter mRecyclerViewAdapter;
+    private ViewSwitcher mViewSwitcher;
+    private String mEventype;
+
 
     public ReportDialog(@NonNull Context context) {
         this(context, R.style.MyAlertDialogStyle);
@@ -56,6 +60,7 @@ public class ReportDialog extends Dialog {
             }
         });
         setupRecyclerView(dialogView);
+        mViewSwitcher = (ViewSwitcher) dialogView.findViewById(R.id.viewSwitcher);
     }
 
     public static ReportDialog newInstance(Context context, int cx, int cy) {
@@ -98,16 +103,25 @@ public class ReportDialog extends Dialog {
     private void setupRecyclerView(View dialogView) {
         mRecyclerView = dialogView.findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        mRecyclerViewAdapter = new ReportRecycleViewAdapter(getContext(), Config.listItems);
-        mRecyclerViewAdapter.setClickListener(new ReportRecycleViewAdapter
+        mRecyclerViewAdapter = new ReportRecyclerViewAdapter(getContext(), Config.listItems);
+        mRecyclerViewAdapter.setClickListener(new ReportRecyclerViewAdapter
                 .OnClickListener() {
             @Override
             public void setItem(String item) {
                 // for switch item
+                showNextViewSwitcher(item);
             }
         });
 
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
+    }
+
+
+    private void showNextViewSwitcher(String item) {
+        mEventype = item;
+        if (mViewSwitcher != null) {
+            mViewSwitcher.showNext();
+        }
     }
 
 }

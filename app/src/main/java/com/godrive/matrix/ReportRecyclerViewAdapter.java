@@ -13,23 +13,21 @@ import java.util.List;
 
 import static com.godrive.matrix.R.layout.recyclerview_item;
 
-public class ReportRecycleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ReportRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Item> mItems;
     private LayoutInflater mInflater;
-
     private OnClickListener mClickListener;
 
     public interface OnClickListener{
-        public void setItem(String item);
+        void setItem(String item);
     }
 
-    public void setClickListener(ReportRecycleViewAdapter.OnClickListener callback) {
+    public void setClickListener(OnClickListener callback) {
         mClickListener = callback;
     }
 
-
-    public ReportRecycleViewAdapter(Context context, List<Item> items) {
+    public ReportRecyclerViewAdapter(Context context, List<Item> items) {
         this.mInflater = LayoutInflater.from(context);
         this.mItems = items;
     }
@@ -57,7 +55,6 @@ public class ReportRecycleViewAdapter extends RecyclerView.Adapter<RecyclerView.
         ViewHolder viewHolder = (ViewHolder)holder;
         viewHolder.mTextView.setText(mItems.get(position).getDrawable_label());
         viewHolder.mImageView.setImageResource(mItems.get(position).getDrawable_id());
-
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
