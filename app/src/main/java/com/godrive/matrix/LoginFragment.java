@@ -14,6 +14,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.util.Objects;
 
 /**
@@ -53,8 +56,7 @@ public class LoginFragment extends OnBoardingBaseFragment {
             @Override
             public void onClick(View v) {
                 final String username = usernameEditText.getText().toString();
-                final String password = Utils.md5Encryption(passwordEditText.getText().toString());
-
+                final String password = new String(Hex.encodeHex(DigestUtils.md5(passwordEditText.getText().toString())));
                 database.child("user").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

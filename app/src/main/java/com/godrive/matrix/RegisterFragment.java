@@ -14,6 +14,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link RegisterFragment#newInstance} factory method to
@@ -57,7 +60,7 @@ public class RegisterFragment extends OnBoardingBaseFragment {
                         } else if (!username.isEmpty() && !password.isEmpty()) {
                             final User user = new User();
                             user.setUser_account(username);
-                            user.setUser_password(Utils.md5Encryption(password));
+                            user.setUser_password(new String(Hex.encodeHex(DigestUtils.md5(passwordEditText.getText().toString()))));
                             user.setUser_timestamp(System.currentTimeMillis());
                             database.child("user").child(user.getUser_account()).setValue(user);
                             Toast.makeText(getContext(), "user has successfully registered",
