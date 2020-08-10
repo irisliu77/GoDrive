@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,14 +28,17 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.Nullable;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -103,7 +107,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback, Report
         super.onViewCreated(view, savedInstanceState);
         mapView = (MapView) this.view.findViewById(R.id.event_map_view);
 
-        fabReport = (FloatingActionButton)view.findViewById(R.id.fab);
+        fabReport = (FloatingActionButton) view.findViewById(R.id.fab);
         fabReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -185,7 +189,9 @@ public class MainFragment extends Fragment implements OnMapReadyCallback, Report
 
         // adding marker
         googleMap.addMarker(marker);
+        loadEventInVisibleMap();
     }
+
     private void showDialog(String label, String prefillText) {
         int cx = (int) (fabReport.getX() + (fabReport.getWidth() / 2));
         int cy = (int) (fabReport.getY()) + fabReport.getHeight() + 56;
@@ -241,6 +247,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback, Report
         );
         startActivityForResult(pictureIntent, REQUEST_CAPTURE_IMAGE);
     }
+
     //Store the image into local disk
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -278,10 +285,13 @@ public class MainFragment extends Fragment implements OnMapReadyCallback, Report
             default:
         }
     }
+
     //Upload image to cloud storage
     private void uploadImage(final String key) {
-        if (destination == null || !destination.exists()) {
+        File file = new File(path);
+        if (!file.exists()) {
             dialog.dismiss();
+            loadEventInVisibleMap();
             return;
         }
 
@@ -304,9 +314,11 @@ public class MainFragment extends Fragment implements OnMapReadyCallback, Report
                         setValue(downloadUri.toString());
                 destination.delete();
                 dialog.dismiss();
+                loadEventInVisibleMap();
             }
         });
     }
+
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -319,5 +331,50 @@ public class MainFragment extends Fragment implements OnMapReadyCallback, Report
                     REQUEST_EXTERNAL_STORAGE
             );
         }
+    }
+
+    //get center coordinate
+    private void loadEventInVisibleMap() {
+        database.child("events").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot noteDataSnapshot : dataSnapshot.getChildren()) {
+                    TrafficEvent event = noteDataSnapshot.getValue(TrafficEvent.class);
+                    double eventLatitude = event.getEvent_latitude();
+                    double eventLongitude = event.getEvent_longitude();
+
+                    locationTracker.getLocation();
+                    double centerLatitude = locationTracker.getLatitude();
+                    double centerLongitude = locationTracker.getLongitude();
+
+
+                    int distance = Utils.distanceBetweenTwoLocations(centerLatitude, centerLongitude,
+                            eventLatitude, eventLongitude);
+
+                    if (distance < 20) {
+                        LatLng latLng = new LatLng(eventLatitude, eventLongitude);
+                        MarkerOptions marker = new MarkerOptions().position(latLng);
+
+                        // Changing marker icon
+                        String type = event.getEvent_type();
+                        Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(),
+                                Config.trafficMap.get(type));
+
+                        Bitmap resizeBitmap = Utils.getResizedBitmap(icon, 130, 130);
+
+                        marker.icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap));
+
+                        // adding marker
+                        Marker mker = googleMap.addMarker(marker);
+                        mker.setTag(event);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //TODO: do something
+            }
+        });
     }
 }
