@@ -39,11 +39,32 @@ public class ReportDialog extends Dialog {
     private ImageView mEventTypeImg;
     private TextView mTypeTextView;
     private DialogCallBack mDialogCallBack;
+    private String mPrefillText;
 
     interface DialogCallBack {
         void onSubmit(String editString, String event_type);
         void startCamera();
     }
+    public void setVocieInfor(String event_type, String prefillText) {
+        mEventType = event_type;
+        mPrefillText = prefillText;
+
+    }
+
+
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mEventType != null) {
+            showNextViewSwitcher(mEventType);
+        }
+        if (mPrefillText != null) {
+            mCommentEditText.setText(mPrefillText);
+        }
+    }
+
 
     private void setUpEventSpecs(final View dialogView) {
         mImageCamera = (ImageView) dialogView.findViewById(R.id.event_camera_img);
